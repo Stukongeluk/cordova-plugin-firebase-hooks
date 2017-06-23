@@ -44,8 +44,7 @@ module.exports = function (context) {
           var strings = fs.readFileSync(path.join(androidFolder, "res/values/strings.xml")).toString();
 
           // strip any existing value
-          strings = strings.replace(new RegExp('<string name="google_app_id">[^<]+?</string>', "ig"), '');
-
+          strings = strings.replace(new RegExp('<string name="google_app_id"(?:.*)?>[^<]+?</string>', "ig"), '');
           // strip any existing value
           strings = strings.replace(new RegExp('<string name="google_api_key">[^<]+?</string>', "ig"), '');
 
