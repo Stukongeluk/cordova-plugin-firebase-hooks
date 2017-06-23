@@ -43,20 +43,28 @@ module.exports = function (context) {
           var json = JSON.parse(contents);
           var strings = fs.readFileSync(path.join(androidFolder, "res/values/strings.xml")).toString();
 
-          // strip non-default value
-          strings = strings.replace(new RegExp('<string name="google_app_id">[^<]+?</string>', "i"), '<string name="google_app_id">' + json.client[0].client_info.mobilesdk_app_id + '</string>');
+          // strip any existing value
+          strings = strings.replace(new RegExp('<string name="google_app_id">[^<]+?</string>', "ig"), '');
 
-          // strip non-default value
-          strings = strings.replace(new RegExp('<string name="google_api_key">[^<]+?</string>', "i"), '<string name="google_api_key">' + json.client[0].api_key[0].current_key + '</string>');
+          // strip any existing value
+          strings = strings.replace(new RegExp('<string name="google_api_key">[^<]+?</string>', "ig"), '');
 
           // strip empty lines
           strings = strings.replace(new RegExp('(\r\n|\n|\r)[ \t]*(\r\n|\n|\r)', "gm"), '$1');
+
+          // add value if it didn't exist
+          if (strings.indexOf('<string name="google_app_id">') == -1) {
+              strings = strings.replace(new RegExp('</resources>', "i"), '    <string name="google_app_id">' + json.client[0].client_info.mobilesdk_app_id + '</string>\n</resources>');
+          }
+          // add value if it didn't exist
+          if (strings.indexOf('<string name="google_api_key">') == -1) {
+              strings = strings.replace(new RegExp('</resources>', "i"), '    <string name="google_api_key">' + json.client[0].api_key[0].current_key + '</string>\n</resources>');
+          }
 
           fs.writeFileSync(path.join(androidFolder, "res/values/strings.xml"), strings);
         } catch(err) {
           logMe(err);
         }
-
         break;
       }
     }
